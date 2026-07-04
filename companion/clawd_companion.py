@@ -207,9 +207,11 @@ def cmd_hide(data):
 
 def cmd_resume(data):
     """Flip a session back to 'working' once Claude resumes after a mid-turn block
-    (a question/permission the user just answered). Driven by PreToolUse — the
-    first tool Claude runs after the block clears means it's working again. No-op
-    unless the session is currently 'waiting', so it's cheap to call per tool."""
+    (a question/permission the user just answered). Driven by both PreToolUse and
+    PostToolUse: PostToolUse fires the instant AskUserQuestion returns the answer
+    (so answer-then-text-only turns clear too, not just answer-then-more-tools);
+    PreToolUse clears it snappily when the next tool runs after a permission grant.
+    No-op unless the session is currently 'waiting', so it's cheap per tool event."""
     sid = _session_id(data)
     p = _sess_path(sid)
     if not os.path.exists(p):

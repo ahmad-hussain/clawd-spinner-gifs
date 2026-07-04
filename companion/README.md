@@ -24,9 +24,11 @@ from `~/.claude/sessions/*.json` by `session_id`), or a stable random name like
     Code's Notification hook also fires on the 60s idle timeout *after* a turn
     ends — when no active-turn state file exists — so that case is ignored
     (idle ≠ "your turn").
-  - `resume` (PreToolUse)       → flip waiting → working once Claude resumes after
-    you answer (its next tool call is the signal). Fast-path: only spawns Python
-    if some session is actually waiting.
+  - `resume` (PreToolUse + PostToolUse) → flip waiting → working once Claude resumes
+    after you answer. PostToolUse fires the instant `AskUserQuestion` returns your
+    answer (so answer-then-text-only turns clear too, not just answer-then-more-tools);
+    PreToolUse clears it snappily when the next tool runs after a permission grant.
+    Fast-path: only spawns Python if some session is actually waiting.
   - `hide`   (Stop)             → remove the session's file
   Each (except `resume`) also makes sure the daemon is running.
 - **One long-lived daemon** (`clawd_companion.py daemon`) owns the tray: it polls
@@ -60,6 +62,7 @@ Then add to `~/.claude/settings.json` (absolute paths; `async`):
   "hooks": {
     "UserPromptSubmit": [ { "hooks": [ { "type": "command", "command": "~/Documents/cc-gifs/companion/show.sh",   "async": true } ] } ],
     "PreToolUse":       [ { "hooks": [ { "type": "command", "command": "~/Documents/cc-gifs/companion/resume.sh", "async": true } ] } ],
+    "PostToolUse":      [ { "hooks": [ { "type": "command", "command": "~/Documents/cc-gifs/companion/resume.sh", "async": true } ] } ],
     "Notification":     [ { "hooks": [ { "type": "command", "command": "~/Documents/cc-gifs/companion/notify.sh", "async": true } ] } ],
     "Stop":             [ { "hooks": [ { "type": "command", "command": "~/Documents/cc-gifs/companion/hide.sh",   "async": true } ] } ]
   }

@@ -46,7 +46,8 @@ import json, os, shutil, sys, time
 
 companion, mode = sys.argv[1], sys.argv[2]
 EVENTS = [("UserPromptSubmit", "show.sh"), ("PreToolUse", "resume.sh"),
-          ("Notification", "notify.sh"), ("Stop", "hide.sh")]
+          ("PostToolUse", "resume.sh"), ("Notification", "notify.sh"),
+          ("Stop", "hide.sh")]
 
 def entry(script):
     return {"type": "command", "command": os.path.join(companion, script), "async": True}

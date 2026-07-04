@@ -61,7 +61,7 @@ The generator currently draws **195 spinner scenes** (186 official Claude Code s
 ./companion/install.sh
 ```
 
-Then restart Claude Code. The installer builds `companion/.venv` (PyObjC), generates the GIFs, and wires four hooks — `UserPromptSubmit` (working), `PreToolUse` (resume), `Notification` (needs input), `Stop` (done). macOS only; the generator itself is cross-platform.
+Then restart Claude Code. The installer builds `companion/.venv` (PyObjC), generates the GIFs, and wires five hooks — `UserPromptSubmit` (working), `PreToolUse`/`PostToolUse` (resume after you answer), `Notification` (needs input), `Stop` (done). macOS only; the generator itself is cross-platform.
 
 ## Project Structure
 
