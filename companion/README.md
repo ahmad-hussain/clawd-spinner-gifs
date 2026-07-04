@@ -49,8 +49,10 @@ from `~/.claude/sessions/*.json` by `session_id`), or a stable random name like
   wired only by `--with-sound`. The two sounds (Glass / Funk) are editable at the
   top of the file; any `/System/Library/Sounds/` name works.
 - `notify-banner.sh` — **optional** native macOS banner (`done` / `needs-input`),
-  wired only by `--with-banner`. Uses `terminal-notifier` (shows a custom icon)
-  when installed, else falls back to `osascript`. Visual only — no sound.
+  wired only by `--with-banner`. The title includes the session name (resolved
+  from the hook's `session_id`) so you can tell which session it's about. Uses
+  `terminal-notifier` (shows a custom icon) when installed, else falls back to
+  `osascript`. Visual only — no sound.
 - `banner-icon.png` *(optional, local)* — a custom icon for the banner. If present
   it overrides the generated default `../generated/clawd-icon.png`. Git-ignored
   (drop in any PNG).
