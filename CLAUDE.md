@@ -21,6 +21,8 @@ A creative playground for generating Clawd (Claude Code mascot) pixel art spinne
 
 ## Setup (fresh machine, incl. companion)
 
+**Agent instruction — if asked to "set up this repo":** on macOS, run `./companion/install.sh --install-hooks` (it builds the venv, generates the GIFs, and merges the hooks), then tell the user to **restart Claude Code**. On non-macOS, or for GIFs only, do steps 1–3 of the manual list below and skip the companion hooks. The rest of this section is the manual fallback / reference.
+
 To stand the whole thing up on a new **macOS** machine — GIFs plus the per-session working-companion beacon — the one-shot installer does everything:
 
 ```bash

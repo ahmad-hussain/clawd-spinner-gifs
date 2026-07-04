@@ -23,13 +23,30 @@ This repository is an unofficial technical/art experiment. The code in this repo
 
 Those files are intentionally ignored in git so this public repo stays lightweight and code-focused.
 
-## Installation
+## Setup
+
+**Full setup (macOS — GIFs + working companion), one command:**
+
+```bash
+git clone git@github.com:ahmad-hussain/cc-gifs.git ~/Documents/cc-gifs
+cd ~/Documents/cc-gifs
+./companion/install.sh --install-hooks    # builds the venv, generates the GIFs, wires the companion hooks
+#                              --with-sound  # (optional) also add done / needs-input system sounds
+# then restart Claude Code
+```
+
+Run `./companion/install.sh` *without* `--install-hooks` to print the hook JSON for manual review instead of merging it. The installer is idempotent and safe to re-run.
+
+**GIFs only (any OS, no companion):**
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+python3 generate_clawd_gifs.py
 ```
+
+> **Setting up with an AI agent?** Clone the repo, open Claude Code inside it, and ask it to *"set up this repo."* `CLAUDE.md` carries the exact steps (one-command installer + manual fallback + the hooks) for the agent to follow.
 
 ## Usage
 
