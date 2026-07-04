@@ -124,20 +124,26 @@ def _session_name(sid):
     return name
 
 
-def _interactive_sids():
-    """Session ids Claude Code tracks as interactive in ~/.claude/sessions. Headless
-    (`claude -p`) / SDK sessions — e.g. a Slack bridge — aren't listed there, so we
-    skip their mascots entirely (they reply through their own channel, and never
-    fire Stop to clean up)."""
-    sids = set()
+def _registry_map():
+    """{sessionId: entrypoint} from ~/.claude/sessions. Interactive terminal sessions
+    use entrypoint 'cli'; SDK / headless sessions (e.g. a Slack bridge driving the
+    Agent SDK) use an 'sdk*' entrypoint — we skip mascots for those, since they reply
+    through their own channel and never fire Stop to clean up."""
+    m = {}
     for p in glob.glob(os.path.expanduser("~/.claude/sessions/*.json")):
         try:
             o = json.load(open(p))
-            if o.get("kind") == "interactive":
-                sids.add(o.get("sessionId"))
         except Exception:
-            pass
-    return sids
+            continue
+        sid = o.get("sessionId")
+        if sid:
+            m[sid] = str(o.get("entrypoint") or "")
+    return m
+
+
+def _is_sdk_session(sid, regmap=None):
+    ep = (regmap if regmap is not None else _registry_map()).get(sid, "")
+    return ep.lower().startswith("sdk")
 
 
 def _pick_gif():
@@ -187,8 +193,8 @@ def _ensure_daemon():
 def cmd_show(data):
     _ensure_dirs()
     sid = _session_id(data)
-    if sid not in _interactive_sids():
-        return  # headless / SDK session (not interactive) → no mascot at all
+    if _is_sdk_session(sid):
+        return  # SDK / headless session (e.g. Slack bridge) → no mascot at all
     gif = _pick_gif()
     if not gif:
         return
@@ -333,7 +339,7 @@ def cmd_daemon():
                 files = [f for f in os.listdir(SESS_DIR) if f.endswith(".json")]
             except FileNotFoundError:
                 files = []
-            inter = _interactive_sids()
+            regmap = _registry_map()
             now = time.time()
             desired = {}
             for fn in files:
@@ -344,9 +350,9 @@ def cmd_daemon():
                 except Exception:
                     continue
                 sid = rec.get("sid") or fn[:-5]
-                # Prune headless/SDK ghosts (not interactive-registered) once stale —
-                # they never fire Stop to remove themselves.
-                if sid not in inter and (now - mt) > STALE_SECS:
+                # Drop SDK/headless sessions (no mascot for those), and prune ghosts
+                # that de-registered without firing Stop, once stale.
+                if _is_sdk_session(sid, regmap) or (sid not in regmap and (now - mt) > STALE_SECS):
                     try:
                         os.remove(p)
                     except OSError:
